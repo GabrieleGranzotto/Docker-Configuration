@@ -1,4 +1,3 @@
-misc/
-*.md
 *.pdf
-*.png
+shared_data/*.pub
+shared_data/myhost.txt
