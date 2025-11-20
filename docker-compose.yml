@@ -1,0 +1,57 @@
+services:
+  master:
+    build:
+      context: .
+      dockerfile: master/Dockerfile
+    container_name: master
+    hostname: master
+    networks:
+      - testnet
+    volumes:
+      - ./shared_data:/data
+    cpus: '2.0'
+    mem_limit: 2G
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/id_rsa.pub"]
+      interval: 1s
+      timeout: 60s
+      start_period: 3s
+
+  node01:
+    build:
+      context: .
+      dockerfile: nodes/Dockerfile
+    container_name: node01
+    hostname: node01
+    networks:
+      - testnet
+    volumes:
+      - ./shared_data:/data
+    cpus: '2.0'
+    mem_limit: 2G
+    depends_on:
+      master:
+        condition: service_healthy
+
+  node02:
+    build:
+      context: .
+      dockerfile: nodes/Dockerfile
+    container_name: node02
+    hostname: node02
+    networks:
+      - testnet
+    volumes:
+      - ./shared_data:/data
+    cpus: '2.0'
+    mem_limit: 2G
+    depends_on:
+      master:
+        condition: service_healthy
+
+networks:
+  testnet:
+
+
+volumes:
+  shared_data:
