@@ -1,0 +1,32 @@
+t=60
+stress-ng: metrc: [74] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [74]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [74] vm              5657702     60.03     98.15     21.20     94251.05       47405.42
+stress-ng: metrc: [4184] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [4184]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [4184] vm              1276877     60.51     46.03     13.46     21103.33       21463.50
+stress-ng: metrc: [4185] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [4185]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [4185] vm              1279133     60.52     47.52     12.37     21135.92       21356.86
+
+t=120
+stress-ng: metrc: [4593] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [4593]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [4593] vm              4264431    120.35    100.02     17.47     35432.80       36294.92
+stress-ng: metrc: [92] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [92]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [92] vm             10886079    120.40    197.92     40.42     90419.46       45674.01
+stress-ng: metrc: [4592] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [4592]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [4592] vm              4313251    121.09    104.17     14.86     35621.07       36237.73
+
+t=180
+stress-ng: metrc: [5395] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [5395]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [5395] vm              5596622    180.10    146.77     29.88     31075.28       31683.15
+stress-ng: metrc: [5394] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [5394]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [5394] vm              5979602    180.11    143.49     32.29     33198.91       34016.02
+stress-ng: metrc: [110] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [110]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [110] vm             17185775    180.45    294.40     63.54     95237.23       48012.37

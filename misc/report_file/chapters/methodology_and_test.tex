@@ -1,0 +1,520 @@
+\chapter{Performance Tests}
+
+In this chapter, I present the results of these tests. At the end of this chapter my goal is to present the data that can show the differences between VMs performances and containers performances. \\
+On a theoretical basis, the Virtual Machine performs worst in virtually every test because it is a segregated machine that communicates with the hardware through a virtualized layer. This adding step increases the time and the communication overflow, and consequently reduces the performances. \\
+On the practical side, the results can be very different, for many reasons. This is why I had to test and analyze the results.
+
+\section{Methodology \& Applied Tests}
+
+The tests that I did are always on the same machine, so with the same hardware. Containers and VMs have the same amount of RAM, CPU cores and the same OS. This is made to not invalidate all the collected data. \\
+The details of the system are reported below.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{r|l}
+        \color{UniOrange}{CPU}:             & Intel Core i5-8365U 1.60GHz \\
+        \color{UniOrange}{RAM}:             & 16GB DDR4                   \\
+        \color{UniOrange}{DISK}:            & 256GB SSD NVMe              \\
+        \color{UniOrange}{LOCAL HOST OS}:   & Ubuntu 24.04                \\
+        \color{UniOrange}{CORE USED}:       & 2 cores                     \\
+        \color{UniOrange}{RAM USED}:        & 2GB                         \\
+        \color{UniOrange}{TEST MACHINE OS}: & Ubuntu 24.04                \\
+    \end{tabular}
+    \caption{Test Machines Detailed}
+    \label{tab:hardware_details}
+\end{table}
+
+The tests that I did test processing power, memory, disk performances (writing and reading) and network communication. \\
+It is important to note that  almost all tests were performed to test the single node and cluster. To test the cluster performance, I use \textbf{mpirun}, which provides to spread the same test in all nodes of the cluster. \\
+The tests that I used are the following:
+
+\begin{itemize}
+    \item \textbf{HPL} (processing power);
+    \item \textbf{FFT} (processing power);
+    \item \textbf{starDGEMM} (processing power);
+    \item \textbf{stress-ng} (processing power);
+    \item \textbf{sysbench} (processing power);
+    \item \textbf{MPI random access} (memory);
+    \item \textbf{starSTREAM triad} (memory);
+    \item \textbf{stress-ng} (memory);
+    \item \textbf{sysbench} (memory);
+    \item \textbf{iozone} (disk performance);
+    \item \textbf{iperf3} (network communication).
+\end{itemize}
+
+\subsection{mpirun}
+
+\textbf{mpirun} is the launcher for Message Passing Interface (MPI) applications. It executes a program in parallel across multiple processors or different nodes in a cluster, handling the communication environment between them. \\
+To use it, the command is the following:
+
+\begin{codice}[style=bashstyle]{Quick Usage Guide}
+    mpirun -np [number_of_processes] \
+    --hostfile [filename] ./executable
+\end{codice}
+
+\subsection{HPCC}
+
+\textbf{HPCC} is a program that collects a number of tests for the evaluation of computing power and memory. \\
+The most famous and used is \textbf{HPL}, which solves a dense linear system $(Ax=b)$ to measure double-precision floating-point performance. It is the standard benchmark used to rank supercomputers in the \textbf{top500} list. \\
+Another test is FFT, which computes a 1 dimension Discrete Fourier Transform. It measures floating-point performance but heavily stresses the memory subsystem and network due to complex, non-local data access patterns. \\
+\textbf{StarDGEMM} is a CPU-bound benchmark measuring Double-precision General Matrix Multiplication (DGEMM). It tests the raw calculation power and efficiency of the floating-point units. \\
+\textbf{StarSTREAM Triad} measures sustainable memory bandwidth using the Triad operation $(a[i]=b[i]+q \times c[i])$. It tests how fast data can move between the memory and the processor. \\
+\textbf{MPI random access} measures the rate of integer updates to random locations in distributed memory. Specifically, it evaluates the memory latency and performance of the network interconnect between nodes. \\
+The command that I use to test both infrastructures are the following:
+
+\begin{codice}[style=bashstyle]{HPCC command}
+    # to evaluate single node performance
+    mpirun -np 2 hpcc
+    # to evaluate the entire cluster
+    mpirun -np 6 --hostfile ./myhost.txt hpcc
+\end{codice}
+
+This will run all the tests in \textit{HPCC}. To run, this program needs a configuration file, \textit{hpccinf.txt}, in the current directory. \\
+And for the cluster test a file for the \textit{host configuration}.
+
+\begin{codice}[]{myhost.txt}
+    master slots=2
+    node01 slots=2
+    node02 slots=2
+\end{codice}
+
+I decide to test the entire structure with 3 different NB values (128, 192, 256) and 2 N values (6000, 10000). \\
+In the end, the test creates an output file \textit{hpccoutf.txt} with all the results.
+
+\begin{codice}[]{hpccinf.txt}
+    HPLinpack benchmark input file
+    Innovative Computing Laboratory, University of Tennessee
+    HPL.out      output file name (if any)
+    6            device out (6=stdout,7=stderr,file)
+    1            # of problems sizes (N)
+    6000         Ns
+    3            # of NBs
+    128 192 256  NBs
+    0            PMAP process mapping (0=Row-,1=Column-major)
+    1            # of process grids (P x Q)
+    2            Ps
+    3            Qs
+    16.0         threshold
+    1            # of panel fact
+    2            PFACTs (0=left, 1=Crout, 2=Right)
+    1            # of recursive stopping criterium
+    4            NBMINs (>= 1)
+    1            # of panels in recursion
+    2            NDIVs
+    1            # of recursive panel fact.
+    1            RFACTs (0=left, 1=Crout, 2=Right)
+    1            # of broadcast
+    1            BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)
+    1            # of lookahead depth
+    1            DEPTHs (>=0)
+    2            SWAP (0=bin-exch,1=long,2=mix)
+    64           swapping threshold
+    0            L1 in (0=transposed,1=no-transposed) form
+    0            U  in (0=transposed,1=no-transposed) form
+    1            Equilibration (0=no,1=yes)
+    8            memory alignment in double (> 0)
+\end{codice}
+
+\subsection{stress-ng}
+\textbf{Stress-ng} is a stress-test tool designed to load the system. The \textbf{CPU} stressors run complex math to overheat/exhaust cores, while \textbf{Memory} stressors aggressively allocate and trash RAM to find hardware faults.
+The commands that I use are the following:
+
+\begin{codice}[style=bashstyle]{stress-ng}
+    # single node test
+    stress-ng --cpu 2 --timeout 60s
+    stress-ng --vm 1 -vm-bytes 1G --timeout 60s
+    # cluster test
+    mpirun -np 3 --hostfile ./myhost.txt stress-ng --cpu 2 --timeout 60s
+    mpirun -np 3 --hostfile ./myhost.txt stress-ng --vm 1 -vm-bytes 1G --timeout 60s
+\end{codice}
+
+I repeated this test 3 times for different timeouts to track the difference: 60s, 120s, 180s.
+
+\subsection{sysbench}
+\textbf{Sysbench} is a scriptable multi-threaded benchmark. The \textbf{CPU} test verifies speed by calculating prime numbers, while the \textbf{Memory} test measures throughput via sequential or random read/write operations. \\
+The commands to use sysbench are:
+
+\begin{codice}[style=bashstyle]{sysbench commands}
+    sysbench cpu --cpu-max-prime=10000 run
+    sysbench memory --memory-total-size=1G run
+\end{codice}
+
+I run this commands for different \texttt{cpu-max-prime} (10000, 50000, 100000, 150000) and \texttt{memory-total-size} (1G, 2G, 10G, 20G, 40G, 60G). This to see the evolution of the values.
+\subsection{iperf3}
+\textbf{Iperf3} is a network tool that generates traffic to measure the maximum achievable bandwidth. Test throughput, packet loss, and jitter between a client and a server using TCP or UDP. \\
+The commands to use iperf3 are:
+
+\begin{codice}[style=bashstyle]{sysbench commands}
+    # on server
+    iperf3 -s
+    # on client
+    iperf3 -c node01
+\end{codice}
+
+\subsection{iozone}
+\textbf{Iozone} is a filesystem benchmark that performs a wide variety of file operations (read, write, re-read, stride). It analyzes disk I/O performance across different file sizes and block sizes.
+To test iozone I used different commands with different parameters:
+
+\begin{codice}[style=bashstyle]{sysbench commands}
+    # no direct I/O, with caching
+    iozone -a -g 4G -i 0 -i 2 -b [results_file]
+    # direct I/O, without caching
+    iozone -a -g 4G -i 0 -i 2 -I -b [results_file]
+\end{codice}
+
+Now I describe the parameters used:
+
+\begin{itemize}
+    \item \texttt{-a}: automatic settings;
+    \item \texttt{-g}: maximum size of a single file, it is important that is more than RAM dimension;
+    \item \texttt{-i}: type of data to collect (I collect write, rewrite, random write and random read);
+    \item \texttt{-I}: the program uses direct I/O, trying to bypass the cache;
+    \item \texttt{-b}: name of the \texttt{results\_file} in xls extension.
+\end{itemize}
+
+All this test is repeated in the \textbf{local machine directory} and the \textbf{shared directory} to check the different performances.
+
+\section{Results: Processes}
+In this section, I analyze the results of the tests that stress processors. The main test for this part is HPL, but there are also interesting tests that give us useful information.
+\subsection{HPL}
+I run HPL for three different NBs and, as I expect, the performance reduces and the time increases, for all tests: docker with N=6000, docker with N=10000, VM with N=6000 and VM with N=10000, for single node and for the cluster. \
+In Figure \ref{fig:HPL_results_single_nodes}, we can see that the performance of the four problems tested is proportionally inverse to the time, as we aspect. \
+The highest result belongs to the \textbf{docker cluster}, followed by the \textbf{VM single node} and then the \textbf{VM cluster}, the lowest is for the docker single node. The reason why this happened is because, for the single node case, the VM is an isolated structure, with dedicated resources. This characteristic makes it that the VM single core outperforms docker single core structure. The Docker cluster has better communication efficiency between nodes, which is why Docker outperforms the VM cluster. Even the single node VM outperforms the cluster one, because the problem is too small to compensate the large amount of communication overhead.
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/HPL_results.jpg}
+        \caption{HPL computational results for different architectures and tecnology}
+        \label{fig:computational_power_single_nodes}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/HPL_time.jpg}
+        \caption{HPL execution times for different architectures and tecnology}
+        \label{fig:execution_time_single_nodes}
+    \end{subfigure}
+    \caption{HPL results that compares single node and cluster for VM and for docker: time (a) and processing power (b).}
+    \label{fig:HPL_results_single_nodes}
+\end{figure}
+
+We can see the same effect described before in figure \ref{fig:HPL_results_cluster}. Here,  the graph shows the performance of the VM cluster and the Docker cluster, for N=6000 problem and N=10000 problem. For bigger problem,  Docker performs worse than smaller one, while for VM is the opposite.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/HPL_cluster_results.jpg}
+        \caption{HPL computational results in a cluster}
+        \label{fig:computational_power_cluster}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/HPL_cluster_time.jpg}
+        \caption{HPL execution times in a cluster}
+        \label{fig:execution_time_cluster}
+    \end{subfigure}
+    \caption{HPL results for multiple nodes, N=6000 vs N=10000: time (a) and processing power (b).}
+    \label{fig:HPL_results_cluster}
+\end{figure}
+
+In summary, if the problem is large enough, the cluster always performs better, even if it is implemented with a virtual machine. If the problem is small, the cluster of VM is lacking because of communication overhead. Instead, the VM single core performs better than the Docker single core because the dedicated resources strongly increase the performance. This is a problem, again, just for small problems. For large problems, this problem disappears.
+
+\subsection{FFT}
+
+In this test we can see the same behavior of HPL. Docker cluster performs slightly better than all the other configurations,
+while VM single node outperforms Docker single node and VM cluster.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphs/MPIFFT.jpg}
+    \caption{MPIFFT performance test}
+    \label{fig:mpifft}
+\end{figure}
+
+The results are shown in Figure \ref{fig:mpifft}. The VM cluster performes more than 60\% less than VM single node. \\
+For the other three configurations, the performance is very similar. This should be because FFT test is not as demanding as HPL so the test cannot have a big performance difference.
+
+\subsection{starDGEMM}
+
+This test is very CPU intensive, and the results are really surprising. \\
+In Figure \ref{fig:stardgemm}, we can see that the single node configurations perform more than double the cluster configurations.
+The answer that I can give is that the moltiplication of matrices was too small to be efficently parallelized.
+This bring to a large communication overhead that penalized the cluster configurations.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphs/StarDGEMM.jpg}
+    \caption{StarDGEMM performance test}
+    \label{fig:stardgemm}
+\end{figure}
+
+\subsection{stress-ng}
+
+In this test we can see that the performance of Docker and VM are very similar.
+I run this test for different timeouts (60s, 120s, 180s) and the results are almost the same.
+So we can conclude that both technologies are able to provide the same CPU performance for this kind of test and it's not affected by the timeout. \\
+A thing to note is that for both technologies, we can see a node that performs more than twice the other two.
+I think this effect is due to the CPU architecture and the way the OS allocates the resources.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphs/stressng_cpu_stress_test.jpg}
+    \caption{stress-ng: CPU performance test}
+    \label{fig:stress_ng_cpu}
+\end{figure}
+
+\subsection{sysbench}
+
+In this test we can see that Docker and VM have almost the same performance.
+The results are very similar for all the different \texttt{prime numbers}. \\
+This result is reasonable because the allocated resources are the same and in
+this case the virtualization overhead is negligible.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphs/sysbench_cpu.jpg}
+    \caption{sysbench: CPU performance test}
+    \label{fig:sysbench_cpu}
+\end{figure}
+
+\section{Results: Memory}
+
+In this section, I analyze the results of the tests that stress memory.
+The memory in VM is very different compared to Docker,
+because in VM the memory is allocated and dedicated, while in Docker the memory is shared with the host OS. \\
+This characteristic theoretically slows down the VM memory performance.
+
+\subsection{MPI random access}
+
+Even in this case we can see the outperformance of single node configurations over cluster ones.
+Docker single node performs slightly better than VM single node, while Docker cluster performs better than VM cluster. \\
+Obviously, the communication overhead penalizes the cluster configurations.
+In a cluster enviroment, the memory access is slower because of the network latency.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    \includegraphics[width=0.8\textwidth]{graphs/MPI_Random_Access.jpg}
+    \caption{MPI Random Access performance }
+    \label{fig:mpi_random_access}
+\end{figure}
+
+\subsection{starSTREAM triad}
+
+We can analyze the same behavior of previous test in Figure \ref{fig:starstream_triad}.
+The single node configurations outperform the cluster ones,
+and Docker performs slightly better than VM in both configurations. \\
+In this test, more than the previous one, the difference between Docker and VM is not so marked.
+I think becouse this test is more focused on memory bandwidth rather than latency.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    % Sostituisci 'placeholder.jpg' con il nome del tuo file immagine
+    \includegraphics[width=0.8\textwidth]{graphs/StarSTREAM_Triad.jpg}
+    \caption{StarSTREAM Triad performance}
+    \label{fig:starstream_triad}
+\end{figure}
+
+\subsection{stress-ng}
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    % Sostituisci 'placeholder.jpg' con il nome del tuo file immagine
+    \includegraphics[width=0.8\textwidth]{graphs/stressng_memory_stress_test.jpg}
+    \caption{stress-ng memory test performance}
+    \label{fig:stress-ng_memory}
+\end{figure}
+
+In this test, that is the memory version of stress-ng, we can see a similar behavior of the CPU version.
+Docker has better performance than VM almost always. \\
+All the considerations made for the CPU version about cores are valid also for this memory version.
+
+\subsection{sysbench}
+
+This test are the same of the CPU version, but focused on memory, but the results are very different. \\
+The performance of Docker is noticeably better than VM. This is because the memory allocation in VM is dedicated and fixed,
+while in Docker the memory is shared with the host OS, making the access faster. \\
+I need to repeat this test for different \texttt{memory sizes} to see when the data became stable, with no more big changes.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    % Sostituisci 'placeholder.jpg' con il nome del tuo file immagine
+    \includegraphics[width=0.8\textwidth]{graphs/sysbench_memory.jpg}
+    \caption{sysbench memory test performance}
+    \label{fig:sysbench_memory}
+\end{figure}
+
+\section{Results: Disk}
+
+In this section I will analyze the results of the disk performance tests. \\
+For disk performance test, the main tool used is iozone. I decide to test with and without direct I/O,
+that is a way to bypass the cache and write/read directly on the disk. \\
+In this way it emerges how the caching system can influence the performances.
+
+\subsection{iozone: no direct I/O}
+
+I start with the results without direct I/O, so with caching system enabled.
+I tested both in local directory and shared directory. \\
+Theoretically, the shared directory is slower because of the network overhead.
+
+\begin{figure}[htbp]
+    \centering
+    % --- Prima Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_locale_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill % Questo comando spinge le immagini ai bordi opposti
+    % --- Seconda Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_locale_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_locale_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_locale_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    % --- Didascalia Generale ---
+    \caption{iozone local directory performance with no direct I/O: (a) random read (docker), (b) random write (docker), (c) random read (vm) (d) random write (vm)}
+    \label{fig:iozone_no_direct_io}
+\end{figure}
+
+In figure \ref{fig:iozone_no_direct_io} we have four plots:
+in the left side the docker results, in the right side the VM results,
+in the first row the random read results, in the second row the random write results. \\
+It is clear that Docker performs decisively better than VM in both read and write operations.
+This effect is due to the fact that VM use a virtualized disk that slow down the operations. \\
+I suppose that, with caching system enabled, the difference is more marked because the cache system is more efficient in Docker than in VM.
+
+\begin{figure}[htbp]
+    \centering
+    % --- Prima Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_condivisa_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill % Questo comando spinge le immagini ai bordi opposti
+    % --- Seconda Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_condivisa_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_condivisa_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_condivisa_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    % --- Didascalia Generale ---
+    \caption{iozone shared directory performance with no direct I/O: (a) random read (docker), (b) random write (docker), (c) random read (vm) (d) random write (vm)}
+    \label{fig:iozone_no_direct_io_shared}
+\end{figure}
+
+In the shared directory case, shown in figure \ref{fig:iozone_no_direct_io_shared}, the results are overall similar. \\
+The differences, compared to local test, are negligible.
+
+\subsection{iozone: direct I/O}
+
+Iozone test with direct I/O, so without caching system, gives us interesting results.
+First of all, I set the same scale as the previous test to have a better comparison. \\
+The results, shown in figure \ref{fig:iozone_direct_io}, are really different from the previous test. \\
+The similarities between the four previous plots are that Docker always performs better than VM. \\
+The graphs show a decrease in performance of about one order of magnitude compared to the previous test with caching system.
+This prove us how important is the caching system for disk performance. \\
+In a qualitative way, not quantitative, the behavior is similar to the previous test.
+
+\begin{figure}[htbp]
+    \centering
+    % --- Prima Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_locale_no_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill % Questo comando spinge le immagini ai bordi opposti
+    % --- Seconda Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_locale_no_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_locale_no_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_locale_no_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    % --- Didascalia Generale ---
+    \caption{iozone local directory performance with direct I/O: (a) random read (docker), (b) random write (docker), (c) random read (vm) (d) random write (vm)}
+    \label{fig:iozone_direct_io}
+\end{figure}
+
+In figure \ref{fig:iozone_direct_io_shared}, the results are practically identical both in qualitative and quantitative way. \\
+The network overhead does not influence so much the performances in this case. \\
+At the end, we can conclude that Docker has better disk performance than VM,
+and this because the \textbf{hypervisor} layer in VM slow down the disk operations.
+
+\begin{figure}[htbp]
+    \centering
+    % --- Prima Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_condivisa_no_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill % Questo comando spinge le immagini ai bordi opposti
+    % --- Seconda Immagine ---
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/docker_iozone_condivisa_no_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_condivisa_no_cache_rread_3d_plot.jpg}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/vm_iozone_condivisa_no_cache_rwrite_3d_plot.jpg}
+    \end{subfigure}
+    % --- Didascalia Generale ---
+    \caption{iozone shared directory performance with direct I/O: (a) random read (docker), (b) random write (docker), (c) random read (vm) (d) random write (vm)}
+    \label{fig:iozone_direct_io_shared}
+\end{figure}
+
+\section{Results: Communication}
+\subsection{iperf3}
+
+As last test, I analyze the network communication performance with iperf3.
+The result, shown in figure \ref{fig:iperf3}, does not leave space for doubts. \\
+Docker outperforms VM by a large margin. This is because the network virtualization in VM
+adds a large overhead that strongly penalizes the communication performance.
+
+\begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
+    \centering
+    % Sostituisci 'placeholder.jpg' con il nome del tuo file immagine
+    \includegraphics[width=0.8\textwidth]{graphs/iperf3.jpg}
+    \caption{iperf3 comunication performance}
+    \label{fig:iperf3}
+\end{figure}
+
+The difference is more than an order of magnitude,
+making Docker in strong advantage for network communication services. \\
+The test was done using TCP protocol, that is the most used in network communication. \\
+The two involved nodes are in the same physical machine, so the results should be even more marked. \\
+In the previous tests, often the explanation of the difference between Docker and VM could be attributed to the inefficient communication between nodes in VM. \\
+Here, this effect is evident and quantifiable.

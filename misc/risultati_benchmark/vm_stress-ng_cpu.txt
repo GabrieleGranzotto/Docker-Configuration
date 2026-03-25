@@ -1,0 +1,32 @@
+t=120
+stress-ng: metrc: [2522] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [2522]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [2522] cpu              230779    120.01    239.16      0.52      1922.99         962.83
+stress-ng: metrc: [1773] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1773]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1773] cpu              111807    120.01    119.13      0.70       931.67         933.05
+stress-ng: metrc: [1772] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1772]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1772] cpu              112008    120.01    119.21      0.68       933.34         934.28
+
+t=180
+stress-ng: metrc: [1801] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1801]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1801] cpu              165847    180.00    179.07      0.77       921.35         922.19
+stress-ng: metrc: [1802] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1802]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1802] cpu              166599    180.01    179.04      0.74       925.49         926.70
+stress-ng: metrc: [2620] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [2620]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [2620] cpu              341787    180.01    358.34      1.24      1898.73         950.53
+
+t=60
+stress-ng: metrc: [2724] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [2724]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [2724] cpu              114837     60.00    119.77      0.06      1913.83         958.33
+stress-ng: metrc: [1829] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1829]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1829] cpu               56587     60.02     59.41      0.48       942.81         944.84
+stress-ng: metrc: [1828] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s
+stress-ng: metrc: [1828]                           (secs)    (secs)    (secs)   (real time) (usr+sys time)
+stress-ng: metrc: [1828] cpu               57027     60.02     59.57      0.40       950.11         950.95

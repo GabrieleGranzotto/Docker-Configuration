@@ -1,0 +1,51 @@
+Connecting to host node01, port 5201
+[  5] local 172.18.0.2 port 57650 connected to 172.18.0.4 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  5.59 GBytes  48.0 Gbits/sec    0    392 KBytes       
+[  5]   1.00-2.00   sec  5.32 GBytes  45.7 Gbits/sec    0    889 KBytes       
+[  5]   2.00-3.00   sec  5.20 GBytes  44.7 Gbits/sec    0   1.06 MBytes       
+[  5]   3.00-4.00   sec  5.43 GBytes  46.6 Gbits/sec    0   1.06 MBytes       
+[  5]   4.00-5.00   sec  4.97 GBytes  42.7 Gbits/sec    0   1.11 MBytes       
+[  5]   5.00-6.00   sec  5.29 GBytes  45.5 Gbits/sec    0   1.11 MBytes       
+[  5]   6.00-7.00   sec  5.25 GBytes  45.1 Gbits/sec    0   1.11 MBytes       
+[  5]   7.00-8.00   sec  5.45 GBytes  46.8 Gbits/sec    0   1.11 MBytes       
+[  5]   8.00-9.00   sec  5.27 GBytes  45.3 Gbits/sec    0   1.16 MBytes       
+[  5]   9.00-10.00  sec  5.23 GBytes  44.9 Gbits/sec    0   1.16 MBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  54.3 GBytes  46.6 Gbits/sec    0             sender
+[  5]   0.00-10.00  sec  54.3 GBytes  46.6 Gbits/sec                  receiver
+
+iperf Done.
+Connecting to host node01, port 5201
+[  5] local 172.18.0.2 port 33484 connected to 172.18.0.4 port 5201
+[  7] local 172.18.0.2 port 33488 connected to 172.18.0.4 port 5201
+[ ID][Role] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5][TX-C]   0.00-1.00   sec  4.27 GBytes  36.6 Gbits/sec    0    592 KBytes       
+[  7][RX-C]   0.00-1.00   sec  4.51 GBytes  38.7 Gbits/sec                  
+[  5][TX-C]   1.00-2.00   sec  2.65 GBytes  22.8 Gbits/sec    0    916 KBytes       
+[  7][RX-C]   1.00-2.01   sec  1.99 GBytes  16.9 Gbits/sec                  
+[  5][TX-C]   2.00-3.00   sec  4.21 GBytes  36.2 Gbits/sec    0   1.04 MBytes       
+[  7][RX-C]   2.01-3.01   sec  3.97 GBytes  34.1 Gbits/sec                  
+[  5][TX-C]   3.00-4.00   sec  4.13 GBytes  35.5 Gbits/sec    0   1.04 MBytes       
+[  7][RX-C]   3.01-4.03   sec  4.43 GBytes  37.4 Gbits/sec                  
+[  5][TX-C]   4.00-5.00   sec  4.19 GBytes  36.0 Gbits/sec    0   1.26 MBytes       
+[  7][RX-C]   4.03-5.01   sec  4.22 GBytes  37.0 Gbits/sec                  
+[  5][TX-C]   5.00-6.00   sec  3.67 GBytes  31.6 Gbits/sec    0   1.39 MBytes       
+[  7][RX-C]   5.01-6.04   sec  3.83 GBytes  31.7 Gbits/sec                  
+[  5][TX-C]   6.00-7.00   sec  4.07 GBytes  34.9 Gbits/sec    0   1.39 MBytes       
+[  7][RX-C]   6.04-7.01   sec  3.88 GBytes  34.4 Gbits/sec                  
+[  5][TX-C]   7.00-8.00   sec  4.00 GBytes  34.3 Gbits/sec    0   1.61 MBytes       
+[  7][RX-C]   7.01-8.00   sec  4.24 GBytes  36.8 Gbits/sec                  
+[  5][TX-C]   8.00-9.00   sec  4.22 GBytes  36.3 Gbits/sec    0   1.77 MBytes       
+[  7][RX-C]   8.00-9.00   sec  4.26 GBytes  36.6 Gbits/sec                  
+[  5][TX-C]   9.00-10.00  sec  4.32 GBytes  37.1 Gbits/sec    0   1.77 MBytes       
+[  7][RX-C]   9.00-10.00  sec  4.16 GBytes  35.7 Gbits/sec                  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID][Role] Interval           Transfer     Bitrate         Retr
+[  5][TX-C]   0.00-10.00  sec  40.1 GBytes  34.5 Gbits/sec    0             sender
+[  5][TX-C]   0.00-10.00  sec  40.1 GBytes  34.5 Gbits/sec                  receiver
+[  7][RX-C]   0.00-10.00  sec  39.5 GBytes  33.9 Gbits/sec    1             sender
+[  7][RX-C]   0.00-10.00  sec  39.5 GBytes  33.9 Gbits/sec                  receiver
+
+iperf Done.

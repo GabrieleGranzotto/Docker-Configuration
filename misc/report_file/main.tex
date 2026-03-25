@@ -1,0 +1,191 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ========= CONFIGURATION DOCUMENT FOR COLLEGE REPORT (CS) =========%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[
+    12pt,                % Readable font dimention
+    a4paper,             % Page format
+    oneside,             % Print just front (change in 'twoside' for front-back)
+    titlepage,           % Separate titlepage
+    english              % Main language (for KOMA-Script)
+]{report}              % 'scrreprt' is the 'report' class of KOMA-Script (more modern)
+
+% --- 1. Fondamental packages (Format & language) ---
+\usepackage[utf8]{inputenc}    % Input format for accented characters
+\usepackage[T1]{fontenc}       % Output font format (better syllabation)
+\usepackage[english]{babel}    % English manager
+\usepackage{csquotes}          % Necessary for 'biblatex' for right quotes
+\usepackage{float}
+\usepackage[table]{xcolor}
+% --- 2. Tipography & Layout ("Look & Feel") ---
+\usepackage{lmodern}           % Use "Latin Modern" (enhanced version of the standard one)
+\usepackage{microtype}         % Enhanced micro-tipography (giustification, spacing)
+\usepackage[
+    a4paper,
+    margin=2.5cm               % Good margin, not eccessive
+]{geometry}
+\usepackage{setspace}          % Manage interline
+\onehalfspacing                % Interline 1.5 (universitary report standard)
+
+% --- 3. Color & Graphic ---
+\usepackage{graphicx}                        % For include images
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage[dvipsnames, table]{xcolor}       % For define and use colors
+\definecolor{UniOrange}{rgb}{0.8, 0.4, 0.1}  % Average brite orange
+\definecolor{UniBlue}{rgb}{0.1, 0.3, 0.7}    % Dark blue professional
+\definecolor{DeepBlue}{rgb}{0, 0.2, 0.4}     % Very dark blue
+\definecolor{LinkBlue}{rgb}{0.1,0.2,0.9}     % More brite blue
+
+% --- 4. Header & Footer ---
+\usepackage{fancyhdr}                        % Package to personalize header/footer
+\pagestyle{fancy}
+% Ensure enough head height for fancyhdr (suggested by package)
+\setlength{\headheight}{14.49998pt}
+\fancyhf{}                                   % Clean all fields
+\fancyhead[L]{\nouppercase{\leftmark}}       % Chapter/section name to left
+\fancyfoot[C]{\thepage}                      % Page number at center
+\renewcommand{\headrulewidth}{0.4pt}         % Thin separation line
+\renewcommand{\footrulewidth}{0pt}           % No footer line
+\fancypagestyle{plain}{                      % 'Plain' page style (initial chapter)
+    \fancyhf{}                               % Clean
+    \fancyfoot[C]{\thepage}                  % Just page number
+}
+
+% --- 5. Title structure (Custumize Aesthetic) ---
+\usepackage{titlesec}                            % Personalize title
+\titleformat{\chapter}
+    {\normalfont\huge\bfseries\color{UniOrange}} % Format
+    {\thechapter.}                               % Number
+    {10pt}                                       % Space
+    {}                                           % Title
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{UniBlue}}
+    {\thesection.}
+    {8pt}
+    {}
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{DeepBlue}}
+    {\thesubsection.}
+    {8pt}
+    {}
+
+% --- 6. Useful packeges (Math & Code) ---
+\usepackage{amsmath, amssymb, amsfonts} % Fondamentals for Math
+\usepackage{booktabs}                   % Professional tables (use \toprule, \midrule,\bottomrule)
+\usepackage{listings}
+\usepackage{tcolorbox}
+
+\tcbuselibrary{listings}
+
+% --- 7. 'listings' style ---
+\lstdefinestyle{mystyle}{
+    commentstyle=\color{Green},
+    keywordstyle=\color{LinkBlue}\bfseries,
+    stringstyle=\color{red!80!black},
+    numberstyle=\tiny\color{gray},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    keepspaces=true,
+    numbers=none,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+}
+
+% Specific for code in bash
+\lstdefinestyle{bashstyle}{
+    style=mystyle,    
+    language=bash,    
+    morekeywords={    
+        rm, ssh, scp, ls, cd, grep, apt, get, yum, systemctl,
+        mv, cp, mkdir, chmod, chown, cat, nano, vim, service, shutdown, ip, netplan, ln, systemctl, restart, VBoxManage, mpirun, touch, docker, hpcc, stress, ng, sysbench, iperf3, iozone
+    }
+}
+
+% --- 8. Code box smoother & prettier ---
+\newtcblisting[auto counter]{codice}[2][]{
+    arc=3mm,
+    colback=orange!5,
+    colframe=orange!80,
+    boxrule=0.8pt,
+    % ----- Title Options -----
+    title={Code \thetcbcounter: #2},
+    colbacktitle=DeepBlue,
+    coltitle=white,
+    fonttitle=\bfseries,
+    % ----- LISTINGS Options -----
+    listing only,
+    listing options={
+        style=mystyle, 
+        #1
+    }
+}
+
+% --- 7. Bibliography ---
+\usepackage[
+    backend=biber,     % Engine to manage bibliography (modern)
+    style=ieee,        % Common style in CS (numeric)
+    sorting=none       % Order for citation
+]{biblatex}
+\addbibresource{bibliography.bib} % .bib file name
+
+% --- 8. Link e Quotes ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=LinkBlue,           % Internal link color
+    citecolor=OliveGreen,         % Citations color
+    urlcolor=LinkBlue             % External link color (URL)
+}
+
+% --- Metadati per la Pagina del Titolo ---
+
+\title{
+    \centering
+    \includegraphics[width=6cm]{settings/units_blue_logo.png}
+    \par
+    \vspace{0.5cm} % Spazio tra logo e titolo
+    {\fontsize{45pt}{53pt}\selectfont
+     \sffamily
+     \bfseries
+     \color{UniBlue}
+     Performance Report
+    }
+    \\
+    \vspace{0.2cm}
+    {\fontsize{34pt}{38pt}\selectfont
+     \sffamily
+     \bfseries
+     \color{UniBlue}
+     Cloud Computing
+    }
+}
+\author{
+    \textbf{\color{UniOrange}Gabriele Granzotto} \\ 
+    \textit{Università degli studi di Trieste} \\ 
+    \texttt{\color{LinkBlue}gabriele.granzotto@studenti.units.it}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ========================= DOCUMENT BEGINNING ==========================%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+% --- Pagina del Titolo ---
+\maketitle % Crea la pagina del titolo
+% --- Indice ---
+\tableofcontents
+\clearpage
+
+% --- Capitoli del Report ---
+\input{chapters/introduction}
+\input{chapters/vm}
+\input{chapters/docker}
+\input{chapters/methodology_and_test}
+\input{chapters/conclusions}
+
+\clearpage
+
+\end{document}

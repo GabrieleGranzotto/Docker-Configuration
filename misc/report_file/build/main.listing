@@ -1,0 +1,4 @@
+    # no direct I/O, with caching
+    iozone -a -g 4G -i 0 -i 2 -b [results_file]
+    # direct I/O, without caching
+    iozone -a -g 4G -i 0 -i 2 -I -b [results_file]

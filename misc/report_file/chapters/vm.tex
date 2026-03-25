@@ -1,0 +1,293 @@
+\chapter{Virtual Machines Setup}
+
+Virtual Machines (VMs) are essential components of modern infrastructure, enabling multiple operating systems to run concurrently on a single physical host. This report analyzes the critical performance metrics of these virtualized environments.
+
+\section{Create the VM}
+
+I decide to use Oracle VirtualBox as a VM program. The reasons are that it is one of the most popular VM program and most supported too. Nevertheless, it accurately represents the performance of that category of program.
+
+\subsection{set VirtualBox}
+The process of creating of a VM is quite easy, all the process is done thanks to GUI:
+
+\begin{itemize}
+    \item press \textit{New} button;
+    \item insert \textit{Name} of the VM and upload the ISO file of the chosen OS;
+    \item choose CPU, RAM and DISK usage for the VM.
+\end{itemize}
+
+I choose to create a VM with 2 Core of CPU, 2GB of RAM and 25GB of virtual disk. \\
+I think it is important to tell my host machine specifications, to better interpret the results of tests that will follow.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{r|l}
+        \color{UniOrange}{CPU}:  & Intel Core i5-8365U 1.60GHz \\
+        \color{UniOrange}{RAM}:  & 16GB DDR4                   \\
+        \color{UniOrange}{DISK}: & 256GB SSD NVMe
+    \end{tabular}
+    \caption{Hardware Specification}
+    \label{tab:hardware}
+\end{table}
+
+\subsection{install the OS}
+
+As Operative System, I choose to install \textbf{Ubuntu Server 24.04}. The reasons of this decision are the widely diffusion of this OS --- giving me the possibility of fixing possible problems searching solutions online --- and because of the stability of this distro in comparison of other like Arch Linux, which has a rolling release frequently that often introduce incompatibility problems between programs or libraries. \\
+Obviously a Linux distribution was mandatory to use standard and well established tests. \\
+The last reason why I choose Ubuntu is that it is my host machine OS, so it is very convenient for me.
+
+\subsection{configure the template}
+
+After creating the VM, it is important to install the OS and configure it properly. \\
+As the first step is important to ensure that the default Network Connection protocol is \textbf{NAT}, the machine will be automatically assigned to an internal IP and will be able to access the Internet. \\
+When the installation procedure asks for which percentage of disk is to be used for installation, it is important to allocate all the space to the OS. \\
+After the insertion of name of your user, password and enable open-ssh I shutdown the machine and then restart.
+
+\begin{codice}[style=bashstyle]{Shutdown in the Terminal}
+    sudo shutdown -h now
+\end{codice}
+
+It is important to update the OS and do the upgrade.
+
+\begin{codice}[style=bashstyle]{Update \& Upgrade}
+    sudo apt update -y && sudo apt upgrade -y
+\end{codice}
+
+We now need to install some crucial programs.
+
+\begin{codice}[style=bashstyle]{Useful Programs}
+    sudo apt install net-tool
+    sudo apt install gcc cmake
+\end{codice}
+
+\subsection{create nodes}
+After all these steps, the VM is ready and we need to create more than one machine to create our cluster. \\
+I decided to use my machine as the \textbf{Master} and use the \textit{clone} option twice to create my two \textbf{Nodes} (node01 \& node02).
+
+\section{Create the Internal Network}
+
+Now it is important to create a \textbf{Network} that allows all nodes to communicate with each other. To do so in $Tool \rightarrow Network$, there is a panel called \textit{Host-only Networks}, there I created a new network and I call it \textbf{CloudBasicNet} with:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{r|l}
+        \color{UniOrange}{Mask}:        & 255.255.255.0  \\
+        \color{UniOrange}{Lower Bound}: & 192.168.56.2   \\
+        \color{UniOrange}{Upper Bound}: & 192.168.56.199
+    \end{tabular}
+    \caption{CloudBasicNet}
+    \label{tab:ip_settings}
+\end{table}
+
+\subsection{attach all nodes}
+
+After this step, modify the network setting. In the setting windows of every node:
+
+\begin{itemize}
+    \item move to $Network \rightarrow Adapter\ 2 $;
+    \item enable the network;
+    \item choose \textit{Internal Network};
+    \item insert the previously created network name.
+\end{itemize}
+
+It is very important activate the \textit{port forwarding} in the nodes to give the possibility to the host to connect to the nodes with ssh.
+
+$$
+    VM\ settings \rightarrow Network \rightarrow Advanced \rightarrow Port\ forwarding
+$$
+
+The port forwarding rule for the Master is:
+
+$$
+    \begin{aligned}
+        Name        & \rightarrow ssh       \\
+        Protocol    & \rightarrow TCP       \\
+        Host\ IP    & \rightarrow 127.0.0.1 \\
+        Host\ Port  & \rightarrow 4022      \\
+        Guest\ Port & \rightarrow 22
+    \end{aligned}
+$$
+
+I did the same thing for the nodes but with the \textit{Host Port} 3022. \\
+Now all nodes and the local host can communicate via \textbf{SSH} protocol.
+
+\begin{codice}[style=bashstyle]{ssh connection from localhost to master}
+    ssh -p 4022 user01@localhost
+\end{codice}
+
+\subsection{master-nodes configuration}
+By executing \textit{ip link show} we can see the name of the various interfaces:
+
+\begin{codice}[style=bashstyle]{scp command}
+    ip link show
+
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    2: enp0s3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:73:b9:25 brd ff:ff:ff:ff:ff:ff
+    3: enp0s8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+    link/ether 08:00:27:c7:a8:a1 brd ff:ff:ff:ff:ff:ff
+\end{codice}
+
+In this case, is crucial to identify the correct network to use to set the \textbf{netplan}. \\
+In my case, it is the \textit{enp0s8}. Identifying the right configuration, I modified the following file in this way:
+
+\begin{codice}[style=bashstyle]{/etc/netplan/50-cloud-init.yaml}
+    network:
+    version: 2
+    ethernets:
+    enp0s3:
+    dhcp4: true
+    enp0s8:
+    dhcp4: false
+    addresses: [192.168.56.1/24]
+\end{codice}
+
+Modified the file, we need to save it and apply it with this command:
+
+\begin{codice}[style=bashstyle]{new netplan application}
+    sudo netplan apply
+\end{codice}
+
+The same instructions must be performed on the client nodes.
+To have more clarity, I change the \textit{host name} of the Master Node in \textbf{master}, changing the file \texttt{/etc/hostname}, and the names of the nodes in \texttt{/etc/host} in this way:
+
+\begin{codice}[style=bashstyle]{hosts name change}
+    127.0.0.1 localhost
+    127.0.1.1 master
+    192.168.56.1 master
+
+    192.168.56.2 node02
+    192.168.56.3 node03
+    192.168.56.4 node04
+    192.168.56.5 node05
+    192.168.56.6 node06
+    192.168.56.7 node07
+    192.168.56.8 node08
+    192.168.56.9 node09
+
+    # The following lines are desirable for IPv6 capable hosts
+    ::1     ip6-localhost ip6-loopback
+    fe00::0 ip6-localnet
+    ff00::0 ip6-mcastprefix
+    ff02::1 ip6-allnodes
+    ff02::2 ip6-allrouters
+\end{codice}
+
+\subsection{DNSMASQ}
+To dynamically assign an ip and the ip addresses and hostname to the client nodes on the internal interface, I installed \texttt{dnsmasq}. To configure it, modify \texttt{/etc/dnsmasq.conf}. The configuration that I used is the following:
+
+\begin{codice}[]{/etc/dnsmasq.conf}
+    interface=enp0s8
+    bogus-priv
+    bind-interfaces
+    cache-size=1000
+    resolv-file=/etc/resolv.dnsmasq
+    listen-address=127.0.0.1,192.168.56.1
+    log-queries
+    dhcp-range=192.168.56.2,192.168.56.10,12h
+\end{codice}
+
+It is also important to modify \texttt{/etc/resolv.conf}:
+
+\begin{codice}[]{/etc/dnsmasq.conf}
+    nameserver 192.168.56.1
+    search .
+\end{codice}
+
+we need to link \texttt{/run/systemd/resolve/resolv.conf} with \texttt{/etc/resolv.dnsmasq} with the following command:
+
+\begin{codice}[style=bashstyle]{linking resolv}
+    sudo ln -s /run/systemd/resolve/resolv.conf \
+    /etc/resolv.dnsmasq
+\end{codice}
+
+and finally restart and enable the service with:
+
+\begin{codice}[style=bashstyle]{dnsmasq}
+    sudo systemctl restart dnsmasq
+    sudo systemctl enable dnsmasq
+\end{codice}
+
+A problem that I find is that when you want to enter a node you need to know the name, therefore the ip. This is a trial and error process for the user. Moreover, if you have a DHCP, this process is even more random. So, a good improvement could be to create a script that checks which node is available, maybe trying to start a contact with that IP, and then assign that IP to the node01, and continue like that for all active nodes. In this way, we always have the open nodes in the lowest possible position (node01, node02, etc) and it is easy to access it.
+
+\subsection{remote access: SSH/SCP}
+To access nodes, I set the network to use the ssh command. This is necessary to communicate between nodes. But a good feature to implement is the key-less access. This process speeds up the test part. The steps to reach this result are:
+
+\begin{itemize}
+    \item create the key in one node with:
+          \begin{codice}[style=bashstyle]{create the key}
+              ssh-keygen
+          \end{codice}
+    \item take the public key generated in the \texttt{.ssh} directory and transfer it to another node
+    \item add to the \texttt{authorized\_key} file with these commands:
+          \begin{codice}[style=bashstyle]{ssh public key}
+              mkdir ~/.ssh
+              chmod 700 ~/.ssh
+              cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+              chmod 644 ~/.ssh/authorized_keys
+          \end{codice}
+\end{itemize}
+
+In this way, all the successive times that I need to access a node, the connection became faster and easier. \\
+Another important command that I usually use in this context is the command to communicate information between nodes and localhost, \textbf{SCP}:
+
+\begin{codice}[style=bashstyle]{scp command}
+    scp -P 4022 /[path]/[to]/[my]/[file] \
+    user01@localhost:/[path]/[to]/[send]/
+\end{codice}
+
+This is pretty useful in the testing phase, due to the fact that I had to transfer the data files to my localhost to be analyzed.
+
+\section{Shared Filesystem}
+
+Another important step that I must take to create my VMs cluster is to create a distributed filesystem accessible from every node in the cluster.
+The program that I use is NFS.
+
+\begin{codice}[style=bashstyle]{installation of NFS}
+    sudo apt install nfs-kernel-server
+    sudo mkdir /shared
+    sudo chmod 777 /shared
+\end{codice}
+
+In the following, I edited this file:
+
+\begin{codice}[style=bashstyle]{/etc/exports}
+    ...
+    /shared/  192.168.56.0/255.255.255.0(rw,sync,no_root_squash,no_subtree_check)
+    ...
+\end{codice}
+
+I restart the service and create two shared subdirectories:
+
+\begin{codice}[style=bashstyle]{/etc/exports}
+    sudo systemctl enable nfs-kernel-server
+    sudo systemctl restart nfs-kernel-server
+    sudo mkdir /shared/data /shared/home
+    sudo chmod 777  /shared/data /shared/home
+\end{codice}
+
+These steps are very useful for testing and evaluating cluster performance.
+
+\section{Useful Scripts}
+
+In the end, to speed up my testing process, I decided to create two scripts to open and close the entire cluster from the terminal. This is because they are common actions.
+
+\begin{codice}[style=bashstyle]{upVM.sh}
+    #!/bin/bash
+    echo "Power On of the VM cluster..."
+    VBoxManage startvm "Ubuntu_VM_Master" --type headless
+    VBoxManage startvm "Ubuntu_VM1" --type headless
+    VBoxManage startvm "Ubuntu_VM2" --type headless
+    echo "Power On command send successfully to all VMs."
+\end{codice}
+
+\begin{codice}[style=bashstyle]{downVM.sh}
+    #!/bin/bash
+    echo "Shut down of the VM cluster..."
+    VBoxManage controlvm "Ubuntu_VM_Master" acpipowerbutton
+    VBoxManage controlvm "Ubuntu_VM1" acpipowerbutton
+    VBoxManage controlvm "Ubuntu_VM2" acpipowerbutton
+    echo "Shutdown command send successfully to all VMs."
+\end{codice}
+
+

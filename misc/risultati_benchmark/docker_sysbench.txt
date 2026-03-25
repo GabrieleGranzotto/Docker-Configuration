@@ -1,0 +1,113 @@
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+CPU:
+
+Running the test with following options:
+Number of threads: 2
+Initializing random number generator from current time
+
+
+Prime numbers limit: 10000
+CPU speed:
+    events per second:  2683.59
+Latency (ms):
+         min:                                    0.71
+         avg:                                    0.74
+         max:                                   13.22
+         95th percentile:                        0.77
+
+Prime numbers limit: 50000
+CPU speed:
+    events per second:   297.87
+Latency (ms):
+         min:                                    6.42
+         avg:                                    6.71
+         max:                                   18.03
+         95th percentile:                        6.91
+
+Prime numbers limit: 100000
+CPU speed:
+    events per second:   113.81
+Latency (ms):
+         min:                                   17.05
+         avg:                                   17.56
+         max:                                   29.86
+         95th percentile:                       18.61
+
+Prime numbers limit: 150000
+CPU speed:
+    events per second:    65.01
+Latency (ms):
+         min:                                   29.87
+         avg:                                   30.75
+         max:                                   46.10
+         95th percentile:                       32.53
+
+_____________________________________________________________________
+
+MEMORY:
+
+Running the test with following options:
+Number of threads: 2
+Initializing random number generator from current time
+operation: write
+scope: global
+
+Following options:
+  block size: 1024KiB
+  total size: 1024MiB
+1024.00 MiB transferred (41270.73 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.05
+         max:                                    0.28
+         95th percentile:                        0.06
+
+Following options:
+  block size: 1024KiB
+  total size: 2048MiB
+2048.00 MiB transferred (43289.60 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.04
+         max:                                    0.15
+         95th percentile:                        0.06
+
+Following options:
+  block size: 1024KiB
+  total size: 10240MiB
+10240.00 MiB transferred (45250.63 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.04
+         max:                                    0.14
+         95th percentile:                        0.05
+
+Following options:
+  block size: 1024KiB
+  total size: 20480MiB
+20480.00 MiB transferred (45388.32 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.04
+         max:                                    0.20
+         95th percentile:                        0.05
+Following options:
+  block size: 1024KiB
+  total size: 40960MiB
+40960.00 MiB transferred (44181.91 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.05
+         max:                                    8.17
+         95th percentile:                        0.06
+
+Following options:
+  block size: 1024KiB
+  total size: 61440MiB
+61440.00 MiB transferred (44224.66 MiB/sec)
+Latency (ms):
+         min:                                    0.04
+         avg:                                    0.04
+         max:                                   10.27
+         95th percentile:                        0.06

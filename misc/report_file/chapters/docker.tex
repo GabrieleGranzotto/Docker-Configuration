@@ -1,0 +1,297 @@
+\chapter{Containers Setup}
+
+As VMs, Containers are fundamental for modern software industry. Provides a safe and controlled environment to run your code, with no hardware virtualization and high performance, similar to the native one. \\
+The use cases are analogs to and have the same versatility as VMs. \\
+I remind the reader that I implement the container in a machine with Ubuntu as OS, this could change the installation procedure and the tests results much.
+All materials that I used came from online guides, videos and a university lecture. \\
+You could find all the configuration on my GitHub: \hyperlink{github.com/GabrieleGranzotto/Docker-Configuration}{github.com/GabrieleGranzotto/Docker-Configuration}.
+
+\section{Create Containers Structure}
+
+There are many programs that provide the possibility to create a container. I used Docker. There is by far the most popular container program.
+As first thing, I had to decide the structure of my project, which disposition my data should have, and make some crucial design choice. I decide for:
+
+\begin{codice}[]{Docker project structure}
+    Docker-Configuration/
+    |
+    +--docker-compose.yml
+    |
+    +--master/
+    |  |
+    |  +-- Dockerfile
+    +--nodes/
+    |  |
+    |  +-- Dockerfile
+    +--shared_data/
+\end{codice}
+
+Finished this part, I need to configure each single file. This has been a trial and error process: many times I modified a file and then I needed to re-modify to adjust or add some feature.
+
+\subsection{docker compose}
+To create the cluster in Docker is barely mandatory to use the feature \texttt{docker compose}. \\
+To set the cluster behavior, it is used the \texttt{docker-compose.yml}.
+In the file, I insert the various services that i want to build:
+
+\begin{itemize}
+    \item master
+    \item node01
+    \item node02
+\end{itemize}
+
+The real configuration of the service is not in the \texttt{docker-compose.yml} file indeed, it is in the specific Dockerfile that I show later. In my specific case, I have two Dockerfiles, one for the master and one for the other nodes. \\
+In my case, I decided to create two subdirectories where Dockerfiles is located. This forced me to specify the pattern in the \texttt{docker-compose.yml} writing in \texttt{build} the \texttt{context: .}, that means "in this directory" (the \texttt{docker-compose.yml} directory), and \texttt{dockerfile: [directory]/Dockerfile}, that is the actual path starting from \texttt{.}. \\
+We can even see \texttt{networks}, that is an internal virtual network that can bind all the nodes one another.
+The command to build the cluster image is: 
+
+\begin{codice}[style=bashstyle]{build docker cluster image}
+docker compose build
+\end{codice}
+
+This has been done in the directory where the \texttt{docker-compose.yml} file is. If the user wants to build an image from scratch, with no caching, the command is:
+
+\begin{codice}[style=bashstyle]{build the image but with no cached data}
+docker compose build --no-cache
+\end{codice}
+
+To turn on the cluster, the command is as follows:
+
+\begin{codice}[style=bashstyle]{turn on the cluster}
+docker compose up -d
+\end{codice}
+
+and to turn off, the command is:
+
+\begin{codice}[style=bashstyle]{turn off the cluster}
+docker compose down
+\end{codice}
+
+These commands are everything I needed to control my cluster.
+
+\begin{codice}[style=bashstyle]{docker-compose.yml}
+services:
+  master:
+    build:
+      context: .
+      dockerfile: master/Dockerfile
+    container_name: master
+    hostname: master
+    networks:
+      - testnet
+  node01:
+    build:
+      context: .
+      dockerfile: nodes/Dockerfile
+    container_name: node01
+    hostname: node01
+    networks:
+      - testnet
+  node02:
+    build:
+      context: .
+      dockerfile: nodes/Dockerfile
+    container_name: node02
+    hostname: node02
+    networks:
+      - testnet
+networks:
+  testnet:
+\end{codice}
+
+\subsection{shared filesystem}
+\texttt{Code 22} is just the backbone of the file. \\
+To create a shared filesystem, I had to have a few more lines. \\
+This adds to the file is simply the creation of a virtual shared storage called \texttt{/data} that are linked to a real directory in the actual directory on the host machine called \texttt{shared\_data}. 
+
+\begin{codice}[style=bashstyle]{docker-compose.yml}
+services:
+  master:
+    ...
+    volumes:
+      - ./shared_data:/data
+  
+  node01:
+    ...
+    volumes:
+      - ./shared_data:/data
+  
+  node02:
+    ...
+    volumes:
+      - ./shared_data:/data
+...
+volumes:
+  ./shared_data:
+\end{codice}
+
+\subsection{resouce limits}
+The last thing --- for now --- to implement is the resouce limits. In the VM is mandatory writing the maximum resources, in docker is not. \\
+So I had to specify it to give, on paper, the same computational power and memory to VM and Docker. So I set \texttt{cpus: '2.0'} and \texttt{mem\_limit: 2G}. \\
+It is important to specify that \textit{in theory} the resources are the same, but \textit{in practice} the resources are very different: 
+
+\begin{itemize}
+    \item in the VM, the machine dedicates two segregated cores;
+    \item in Docker the maximum usage of the CPU cannot exceed the 200\% of a core-power, so it is a dynamic allocation.
+\end{itemize}  
+
+It is similar for the RAM: 
+
+\begin{itemize}
+    \item in VM, we have a part in the memory totally dedicated of VM's processes;
+    \item in Docker, all container's processes are mixed in the local host process memory. So, even the memory is allocated dynamically.
+\end{itemize} 
+
+\begin{codice}[style=bashstyle]{docker-compose.yml}
+services:
+  master:
+    ...
+    cpus: '2.0'
+    mem_limit:2G
+  
+  node01:
+    ...
+    cpus: '2.0'
+    mem_limit:2G
+  
+  node02:
+    ...
+    cpus: '2.0'
+    mem_limit:2G
+...
+volumes:
+  ./shared_data:
+\end{codice}
+
+\section{Configuration Files}
+
+The creation of \texttt{docker-compose.yml} is not sufficient to create the cluster. Naturally, it is necessary to describe the container that you want to build. \\
+In my case I have two types of container, so I wrote two \texttt{Dockerfile}. \\
+The \texttt{Dockerfile} is the file that describes all the characteristic that the container has to have.
+
+\subsection{master Dockerfile}
+The master Dockerfile is composed of different parts:
+
+\begin{itemize}
+    \item the OS used (in my case the same of the VM) and some environment settings;
+\begin{codice}[style = bashstyle]{OS and ENV}
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive \
+  TZ=Europe/Rome
+\end{codice}
+    \item all the installed packages;
+\begin{codice}[style = bashstyle]{apt commands}
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  nano vim curl wget build-essential \
+  software-properties-common \
+  hpcc mpich stress-ng sysbench iozone3 iperf3 netcat-openbsd \
+  openssh-client \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+\end{codice}
+   \item the creation of the ssh key;
+\begin{codice}[style=bashstyle]{ssh-keygen}
+RUN ssh-keygen -f /root/.ssh/id_rsa -N "" \
+    && echo "Host *" > /root/.ssh/config \
+    && echo "    StrictHostKeyChecking no" >> /root/.ssh/config \
+    && echo "    UserKnownHostsFile /dev/null" >> /root/.ssh/config \
+    && chmod 600 /root/.ssh/config
+\end{codice}
+\item the working directory and the command the master must execute (bash)
+\begin{codice}[style=bashstyle]{working directory and CMD}
+WORKDIR /root/
+CMD ["/bin/bash"]
+\end{codice}
+\end{itemize}
+
+\subsection{nodes Dockerfile}
+The Dockerfile of the node differs just in a few things:
+
+\begin{itemize}
+    \item there are some commands that consent to use SSH from master to node, this because linux denies access to the root user by default;
+\begin{codice}[style=bashstyle]{some ssh command}
+RUN mkdir /var/run/sshd \
+    && echo 'root:root' | chpasswd \
+    && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config \
+\end{codice}
+    \item when the node turns on it starts with the \texttt{sshd} service on to consent the master to log in.
+\begin{codice}[style=bashstyle]{node CMD}
+CMD ["/usr/sbin/sshd -D"]
+\end{codice}    
+\end{itemize}
+
+With these settings, the cluster is ready to test the performance.
+
+\section{SSH problems \& strategy}
+
+Before I start talking about performance, it is important to talk about some troubles that I have to face with the ssh keyless process. \\
+The core problem is how to move the public key from the master node to the other nodes. The simplest answer is to generate all the key in the local machine and then move them to the cluster nodes. But this creates two problems:
+
+\begin{itemize}
+    \item the process is not automatized
+    \item the process is not safe because we move the private key that is important to stay in the same place where the user created it.
+\end{itemize}
+
+A strategy that I found is to use a feature that Docker provides that is \texttt{healthcheck}: it is a test that \texttt{Docker Compose} does until the test passes.
+
+\begin{codice}[style=bashstyle]{healthcheck}
+services: 
+  master:
+    ...
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/id_rsa.pub"]
+      interval: 1s
+      timeout: 60s
+      start_period: 3s
+  ...
+  node01:
+    ...
+    depends_on:
+      master:
+        condition: service_healthy
+  ...
+  node01:
+    ...
+    depends_on:
+      master:
+        condition: service_healthy
+...
+\end{codice} 
+
+The test is simply "if the public key exists in the shared directory". If the test is "affirmative", then the other nodes start. \\
+When all nodes are on, the two children copy the content of the public key from the shared directory to \texttt{.ssh/authorized\_keys}. All this process is done to avoid \textit{race condition} between nodes. \\
+I had to find a solution for another problem: the nodes have to copy the public key in runtime, so I inserted a \texttt{setup.sh} script into \textbf{CMD}.
+
+\begin{codice}[style=bashstyle]{node CMD}
+CMD ["/bin/bash", "-c", "/root/setup.sh && /usr/sbin/sshd -D"]
+\end{codice}
+
+The script is as follows:
+
+\begin{codice}[style=bashstyle]{script.sh}
+#!/bin/bash
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+touch /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+cat /data/id_rsa.pub >> /root/.ssh/authorized_keys
+\end{codice}
+
+Another security problem is that the password of the root user is set in clear, not encrypted, as root. So I decide to change the password to a less vulnerable choice:
+
+\begin{codice}[style=bashstyle]{password client}
+...
+RUN mkdir /var/run/sshd \
+    && echo 'root:\$(openssl rand -base64 12)' | chpasswd \
+    ...
+...
+\end{codice}
+
+The node generates a random encrypted password. This is not a perfect choice because no one knows the value of the password, but it is better than the alternative. 
+
+\section{Terminal in a Docker Machine}
+
+The last command is used to enter a node and use the \texttt{bash} program of the node, but the syntax is analogous to that of every other program:
+
+\begin{codice}[style=bashstyle]{docker-compose.yml}
+docker exec -it node bash
+\end{codice}

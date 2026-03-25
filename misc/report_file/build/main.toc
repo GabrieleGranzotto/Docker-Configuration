@@ -1,0 +1,52 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Tasks and Goals}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Report Structure}{3}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Virtual Machines Setup}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Create the VM}{4}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}set VirtualBox}{4}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}install the OS}{4}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}configure the template}{5}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}create nodes}{5}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}Create the Internal Network}{6}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}attach all nodes}{6}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}master-nodes configuration}{7}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}DNSMASQ}{8}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}remote access: SSH/SCP}{10}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Shared Filesystem}{10}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Useful Scripts}{11}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Containers Setup}{13}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Create Containers Structure}{13}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}docker compose}{14}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}shared filesystem}{15}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}resouce limits}{16}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Configuration Files}{17}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}master Dockerfile}{17}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}nodes Dockerfile}{18}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}SSH problems \& strategy}{19}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Terminal in a Docker Machine}{21}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Performance Tests}{22}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Methodology \& Applied Tests}{22}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}mpirun}{23}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}HPCC}{23}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}stress-ng}{25}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}sysbench}{26}{subsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.1.5}iperf3}{26}{subsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.1.6}iozone}{27}{subsection.4.1.6}%
+\contentsline {section}{\numberline {4.2}Results: Processes}{27}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}HPL}{28}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}FFT}{29}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}starDGEMM}{30}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}stress-ng}{30}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}sysbench}{30}{subsection.4.2.5}%
+\contentsline {section}{\numberline {4.3}Results: Memory}{31}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}MPI random access}{31}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}starSTREAM triad}{31}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}stress-ng}{33}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}sysbench}{33}{subsection.4.3.4}%
+\contentsline {section}{\numberline {4.4}Results: Disk}{35}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}iozone: no direct I/O}{35}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}iozone: direct I/O}{36}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Results: Communication}{39}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}iperf3}{39}{subsection.4.5.1}%
+\contentsline {chapter}{\numberline {5}Conclusions}{40}{chapter.5}%

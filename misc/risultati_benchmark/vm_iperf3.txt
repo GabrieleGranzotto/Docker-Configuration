@@ -1,0 +1,38 @@
+Connecting to host node03, port 5201
+[  5] local 192.168.56.1 port 52108 connected to 192.168.56.3 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   412 MBytes  3.46 Gbits/sec  1930    214 KBytes       
+[  5]   1.00-2.00   sec   438 MBytes  3.67 Gbits/sec  2871    182 KBytes       
+[  5]   2.00-3.00   sec   401 MBytes  3.36 Gbits/sec  2176    197 KBytes       
+[  5]   3.00-4.00   sec   432 MBytes  3.62 Gbits/sec  2856    185 KBytes       
+[  5]   4.00-5.00   sec   398 MBytes  3.34 Gbits/sec  2318    160 KBytes       
+[  5]   5.00-6.00   sec   337 MBytes  2.83 Gbits/sec  1886    161 KBytes       
+[  5]   6.00-7.00   sec   376 MBytes  3.15 Gbits/sec  1952    163 KBytes       
+[  5]   7.00-8.00   sec   369 MBytes  3.09 Gbits/sec  805    216 KBytes       
+[  5]   8.00-9.00   sec   352 MBytes  2.95 Gbits/sec  883    214 KBytes       
+[  5]   9.00-10.00  sec   369 MBytes  3.09 Gbits/sec  890    188 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  3.79 GBytes  3.26 Gbits/sec  18567             sender
+[  5]   0.00-10.00  sec  3.79 GBytes  3.25 Gbits/sec                  receiver
+
+iperf Done.
+Connecting to host node03, port 5201
+[  5] local 192.168.56.1 port 48498 connected to 192.168.56.3 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   425 MBytes  3.56 Gbits/sec  2558    173 KBytes       
+[  5]   1.00-2.00   sec   422 MBytes  3.54 Gbits/sec  2617    188 KBytes       
+[  5]   2.00-3.00   sec   372 MBytes  3.12 Gbits/sec  974    232 KBytes       
+[  5]   3.00-4.00   sec   363 MBytes  3.04 Gbits/sec  653    235 KBytes       
+[  5]   4.00-5.00   sec   343 MBytes  2.88 Gbits/sec  577    233 KBytes       
+[  5]   5.00-6.00   sec   362 MBytes  3.04 Gbits/sec  835    243 KBytes       
+[  5]   6.00-7.00   sec   355 MBytes  2.98 Gbits/sec  823    157 KBytes       
+[  5]   7.00-8.00   sec   356 MBytes  2.98 Gbits/sec  895    205 KBytes       
+[  5]   8.00-9.00   sec   368 MBytes  3.09 Gbits/sec  1014    230 KBytes       
+[  5]   9.00-10.00  sec   327 MBytes  2.74 Gbits/sec  681    229 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  3.61 GBytes  3.10 Gbits/sec  11627             sender
+[  5]   0.00-10.00  sec  3.60 GBytes  3.10 Gbits/sec                  receiver
+
+iperf Done.
