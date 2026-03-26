@@ -1,7 +1,7 @@
 \chapter{Containers Setup}
 
-As VMs, Containers are fundamental for modern software industry. Provides a safe and controlled environment to run your code, with no hardware virtualization and high performance, similar to the native one. \\
-The use cases are analogs to and have the same versatility as VMs. \\
+Like VMs, Containers are fundamental for modern software industry. Provides a safe and controlled environment to run your code, with no hardware virtualization and high performance, similar to the native one. \\
+The use cases are analogous to and have the same versatility as VMs. \\
 I remind the reader that I implement the container in a machine with Ubuntu as OS, this could change the installation procedure and the tests results much.
 All materials that I used came from online guides, videos and a university lecture. \\
 You could find all the configuration on my GitHub: \hyperlink{github.com/GabrieleGranzotto/Docker-Configuration}{github.com/GabrieleGranzotto/Docker-Configuration}.
@@ -28,7 +28,7 @@ As first thing, I had to decide the structure of my project, which disposition m
 Finished this part, I need to configure each single file. This has been a trial and error process: many times I modified a file and then I needed to re-modify to adjust or add some feature.
 
 \subsection{docker compose}
-To create the cluster in Docker is barely mandatory to use the feature \texttt{docker compose}. \\
+To create the cluster in Docker is virtually mandatory to use the feature \texttt{docker compose}. \\
 To set the cluster behavior, it is used the \texttt{docker-compose.yml}.
 In the file, I insert the various services that i want to build:
 
@@ -124,7 +124,7 @@ volumes:
 \end{codice}
 
 \subsection{resouce limits}
-The last thing --- for now --- to implement is the resouce limits. In the VM is mandatory writing the maximum resources, in docker is not. \\
+The last thing --- for now --- to implement is the resource limits. In the VM is mandatory writing the maximum resources, in docker is not. \\
 So I had to specify it to give, on paper, the same computational power and memory to VM and Docker. So I set \texttt{cpus: '2.0'} and \texttt{mem\_limit: 2G}. \\
 It is important to specify that \textit{in theory} the resources are the same, but \textit{in practice} the resources are very different: 
 
@@ -206,7 +206,7 @@ CMD ["/bin/bash"]
 The Dockerfile of the node differs just in a few things:
 
 \begin{itemize}
-    \item there are some commands that consent to use SSH from master to node, this because linux denies access to the root user by default;
+    \item there are some commands that allow to use SSH from master to node, this because linux denies access to the root user by default;
 \begin{codice}[style=bashstyle]{some ssh command}
 RUN mkdir /var/run/sshd \
     && echo 'root:root' | chpasswd \
@@ -227,7 +227,7 @@ Before I start talking about performance, it is important to talk about some tro
 The core problem is how to move the public key from the master node to the other nodes. The simplest answer is to generate all the key in the local machine and then move them to the cluster nodes. But this creates two problems:
 
 \begin{itemize}
-    \item the process is not automatized
+    \item the process is not automated
     \item the process is not safe because we move the private key that is important to stay in the same place where the user created it.
 \end{itemize}
 

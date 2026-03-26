@@ -1,7 +1,7 @@
 \chapter{Performance Tests}
 
 In this chapter, I present the results of these tests. At the end of this chapter my goal is to present the data that can show the differences between VMs performances and containers performances. \\
-On a theoretical basis, the Virtual Machine performs worst in virtually every test because it is a segregated machine that communicates with the hardware through a virtualized layer. This adding step increases the time and the communication overflow, and consequently reduces the performances. \\
+On a theoretical basis, the Virtual Machine performs worse in virtually every test because it is a segregated machine that communicates with the hardware through a virtualized layer. This adding step increases the time and the communication overflow, and consequently reduces the performances. \\
 On the practical side, the results can be very different, for many reasons. This is why I had to test and analyze the results.
 
 \section{Methodology \& Applied Tests}
@@ -178,7 +178,7 @@ All this test is repeated in the \textbf{local machine directory} and the \textb
 In this section, I analyze the results of the tests that stress processors. The main test for this part is HPL, but there are also interesting tests that give us useful information.
 \subsection{HPL}
 I run HPL for three different NBs and, as I expect, the performance reduces and the time increases, for all tests: docker with N=6000, docker with N=10000, VM with N=6000 and VM with N=10000, for single node and for the cluster. \
-In Figure \ref{fig:HPL_results_single_nodes}, we can see that the performance of the four problems tested is proportionally inverse to the time, as we aspect. \
+In Figure \ref{fig:HPL_results_single_nodes}, we can see that the performance of the four problems tested is proportionally inverse to the time, as we expected. \
 The highest result belongs to the \textbf{docker cluster}, followed by the \textbf{VM single node} and then the \textbf{VM cluster}, the lowest is for the docker single node. The reason why this happened is because, for the single node case, the VM is an isolated structure, with dedicated resources. This characteristic makes it that the VM single core outperforms docker single core structure. The Docker cluster has better communication efficiency between nodes, which is why Docker outperforms the VM cluster. Even the single node VM outperforms the cluster one, because the problem is too small to compensate the large amount of communication overhead.
 \begin{figure}[htbp]
     \centering
@@ -242,7 +242,7 @@ For the other three configurations, the performance is very similar. This should
 This test is very CPU intensive, and the results are really surprising. \\
 In Figure \ref{fig:stardgemm}, we can see that the single node configurations perform more than double the cluster configurations.
 The answer that I can give is that the moltiplication of matrices was too small to be efficently parallelized.
-This bring to a large communication overhead that penalized the cluster configurations.
+This leads to a large communication overhead that penalized the cluster configurations.
 
 \begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"
     \centering
@@ -501,7 +501,7 @@ and this because the \textbf{hypervisor} layer in VM slow down the disk operatio
 
 As last test, I analyze the network communication performance with iperf3.
 The result, shown in figure \ref{fig:iperf3}, does not leave space for doubts. \\
-Docker outperforms VM by a large margin. This is because the network virtualization in VM
+Docker outperforms VMs by a large margin. This is because the network virtualization in VM
 adds a large overhead that strongly penalizes the communication performance.
 
 \begin{figure}[htbp] % 'h!' tenta di forzare la posizione "qui"

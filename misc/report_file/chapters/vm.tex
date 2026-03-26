@@ -4,10 +4,10 @@ Virtual Machines (VMs) are essential components of modern infrastructure, enabli
 
 \section{Create the VM}
 
-I decide to use Oracle VirtualBox as a VM program. The reasons are that it is one of the most popular VM program and most supported too. Nevertheless, it accurately represents the performance of that category of program.
+I decide to use Oracle VirtualBox as a VM program. The reasons are that it is one of the most popular VM programs and most supported too. Nevertheless, it accurately represents the performance of that category of program.
 
 \subsection{set VirtualBox}
-The process of creating of a VM is quite easy, all the process is done thanks to GUI:
+The process of creating of a VM is quite easy, the entire process is done via a GUI:
 
 \begin{itemize}
     \item press \textit{New} button;
@@ -16,7 +16,7 @@ The process of creating of a VM is quite easy, all the process is done thanks to
 \end{itemize}
 
 I choose to create a VM with 2 Core of CPU, 2GB of RAM and 25GB of virtual disk. \\
-I think it is important to tell my host machine specifications, to better interpret the results of tests that will follow.
+I think it is important to list the host machine specifications, to better interpret the results of tests that will follow.
 
 \begin{table}[H]
     \centering
@@ -31,9 +31,9 @@ I think it is important to tell my host machine specifications, to better interp
 
 \subsection{install the OS}
 
-As Operative System, I choose to install \textbf{Ubuntu Server 24.04}. The reasons of this decision are the widely diffusion of this OS --- giving me the possibility of fixing possible problems searching solutions online --- and because of the stability of this distro in comparison of other like Arch Linux, which has a rolling release frequently that often introduce incompatibility problems between programs or libraries. \\
+As Operative System, I choose to install \textbf{Ubuntu Server 24.04}. The reasons of this decision are the widely diffusion of this OS --- giving me the possibility of fixing possible problems searching solutions online --- and because of the stability of this distro in comparison of other like Arch Linux, which has a rolling release frequently that often introduces incompatibility problems between programs or libraries. \\
 Obviously a Linux distribution was mandatory to use standard and well established tests. \\
-The last reason why I choose Ubuntu is that it is my host machine OS, so it is very convenient for me.
+The last reason why I chose Ubuntu is that it is my host machine OS, so it is very convenient for me.
 
 \subsection{configure the template}
 
@@ -189,7 +189,7 @@ To dynamically assign an ip and the ip addresses and hostname to the client node
 
 It is also important to modify \texttt{/etc/resolv.conf}:
 
-\begin{codice}[]{/etc/dnsmasq.conf}
+\begin{codice}[]{/etc/resolv.conf}
     nameserver 192.168.56.1
     search .
 \end{codice}

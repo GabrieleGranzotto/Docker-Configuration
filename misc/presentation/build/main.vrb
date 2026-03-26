@@ -1,0 +1,16 @@
+\frametitle{Container Setup: SSH Key Passing Strategy - Script}
+\begin{codice}[style=bashstyle]{node CMD (snippet)}
+        CMD ["/bin/bash", "-c", "/root/setup.sh && /usr/sbin/sshd -D"]
+    \end{codice}
+    \begin{codice}[style=bashstyle]{script.sh}
+        #!/bin/bash
+        mkdir -p /root/.ssh
+        chmod 700 /root/.ssh
+        touch /root/.ssh/authorized_keys
+        chmod 600 /root/.ssh/authorized_keys
+        cat /data/id_rsa.pub >> /root/.ssh/authorized_keys
+    \end{codice}
+    \begin{codice}[style=bashstyle]{password client (snippet)}
+        RUN mkdir /var/run/sshd \
+        && echo 'root:\$(openssl rand -base64 12)' | chpasswd \
+    \end{codice}
